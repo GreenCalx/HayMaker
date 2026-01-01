@@ -1,5 +1,7 @@
 using UnityEngine;
-
+using UnityEngine.Events;
+using System.Collections.Generic;
+using System;
 public enum EPlayerState
 {
     IDLE=0,
@@ -7,13 +9,35 @@ public enum EPlayerState
     DRAGGING=2,
     BENDING=3,
     AIRBORNE=4
+}
 
+public class Arc
+{
+    public EPlayerState from;
+    public EPlayerState to;
+    public Func<bool> condition;
+
+    public Arc(EPlayerState iFrom, EPlayerState iTo, Func<bool> iCond)
+    {
+        from = iFrom;
+        to = iTo;
+        condition = iCond;
+    }
+
+    public bool Check(EPlayerState iCurrentPlayerState)
+    {
+        if (iCurrentPlayerState != from)
+            return false;
+        return condition.Invoke();
+    }
 }
 
 public class PlayerFSM
 {
+    public readonly EPlayerState RootState = EPlayerState.IDLE;
     public EPlayerState CurrentState;
     private PlayerController PC;
+    private List<Arc> arcs;
     public PlayerFSM(PlayerController iPC)
     {
         PC = iPC;
@@ -22,18 +46,80 @@ public class PlayerFSM
 
     public void Setup()
     {
-        CurrentState = EPlayerState.IDLE;
+        CurrentState = RootState;
+
+        arcs = new List<Arc>()
+        {
+            new Arc(EPlayerState.IDLE, EPlayerState.RUNNING, RunningCondition),
+
+            new Arc(EPlayerState.RUNNING, EPlayerState.IDLE, IdleCondition),
+            new Arc(EPlayerState.RUNNING, EPlayerState.BENDING, BendingCondition),
+            
+            new Arc(EPlayerState.RUNNING, EPlayerState.DRAGGING, DraggingCondition),
+            new Arc(EPlayerState.DRAGGING, EPlayerState.RUNNING, RunningCondition),
+            new Arc(EPlayerState.DRAGGING, EPlayerState.BENDING, BendingCondition),
+
+            new Arc(EPlayerState.BENDING, EPlayerState.AIRBORNE, AirborneCondition),
+
+            new Arc(EPlayerState.AIRBORNE, EPlayerState.RUNNING, RunningCondition)
+        };
     }
 
     public void Refresh()
     {
+        foreach(Arc arc in arcs)
+        {
+            if (arc.Check(CurrentState))
+            {
+                OnCurrentExit();
+                CurrentState = arc.to;
+                OnCurrentEnter();
+            }
+        }
+    }
+
+    public void OnCurrentExit()
+    {
         switch (CurrentState)
         {
             case EPlayerState.IDLE:
-                if (PC.IsMoving && !PC.IsDragging && !PC.IsBending)
-                {
-                    OnRunningEnter();
-                }
+                OnIdleExit();
+                break;
+            case EPlayerState.RUNNING:
+                OnRunningExit();
+                break;
+            case EPlayerState.DRAGGING:
+                OnDraggingExit();
+                break;
+            case EPlayerState.BENDING:
+                OnBendingExit();
+                break;
+            case EPlayerState.AIRBORNE:
+                OnAirborneExit();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void OnCurrentEnter()
+    {
+        switch (CurrentState)
+        {
+            case EPlayerState.IDLE:
+                OnIdleEnter();
+                break;
+            case EPlayerState.RUNNING:
+                OnRunningEnter();
+                break;
+            case EPlayerState.DRAGGING:
+                OnDraggingEnter();
+                break;
+            case EPlayerState.BENDING:
+                OnBendingEnter();
+                break;
+            case EPlayerState.AIRBORNE:
+                OnAirborneEnter();
                 break;
             default:
                 break;
@@ -45,11 +131,16 @@ public class PlayerFSM
     /// </summary>
     public void OnIdleEnter()
     {
-        
+        Debug.Log("IdleEnter");
     }
     public void OnIdleExit()
     {
-        
+        Debug.Log("IdleExit");
+    }
+
+    public bool IdleCondition()
+    {
+        return !PC.IsMoving && !PC.IsBending && !PC.IsAirborne && !PC.IsDragging;
     }
 
     /// <summary>
@@ -57,11 +148,15 @@ public class PlayerFSM
     /// </summary>
     public void OnRunningEnter()
     {
-        
+        Debug.Log("RunningEnter");
     }
     public void OnRunningExit()
     {
-        
+        Debug.Log("RunningExit");
+    }
+    public bool RunningCondition()
+    {
+        return PC.IsMoving && !PC.IsBending && !PC.IsAirborne && !PC.IsDragging;
     }
 
     /// <summary>
@@ -69,36 +164,47 @@ public class PlayerFSM
     /// </summary>
     public void OnBendingEnter()
     {
-        
+        Debug.Log("BendingEnter");
     }
     public void OnBendingExit()
     {
-        
+        Debug.Log("BendingExit");
     }
-
+    public bool BendingCondition()
+    {
+        return PC.IsMoving && PC.IsBending && !PC.IsAirborne;
+    }
     /// <summary>
     /// Dragging
     /// </summary>
     public void OnDraggingEnter()
     {
-        
+        Debug.Log("DraggingEnter");
+        PC.DragPS.Play();
     }
     public void OnDraggingExit()
     {
-        
+        Debug.Log("DraggingExit");
+        PC.DragPS.Stop();
     }
-
+    public bool DraggingCondition()
+    {
+        return PC.IsMoving && !PC.IsBending && !PC.IsAirborne && PC.IsDragging;
+    }
     /// <summary>
     /// Airborne
     /// </summary>
     public void OnAirborneEnter()
     {
-        
+        Debug.Log("AirborneEnter");
     }
     public void OnAirborneExit()
     {
-        
+        Debug.Log("AirborneExit");
     }
-
+    public bool AirborneCondition()
+    {
+        return PC.IsAirborne;
+    }
     
 }

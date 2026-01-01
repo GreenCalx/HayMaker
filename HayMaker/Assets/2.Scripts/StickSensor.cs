@@ -9,6 +9,9 @@ public class StickSensor : MonoBehaviour
     GameObject collidingObject;
     void OnCollisionEnter(Collision collision)
     {
+        if (player.IsAirborne)
+            return;
+
         collidingObject = collision.gameObject;
         if (((1 << collision.gameObject.layer) & stepLayer) != 0)
         {
@@ -18,13 +21,10 @@ public class StickSensor : MonoBehaviour
 
     void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject != collidingObject)
-        {
-            // ignore collision with different object
+        if (player.IsAirborne)
             return;
-        }
 
-         if (((1 << collision.gameObject.layer) & groundLayer) != 0)
+        if (((1 << collision.gameObject.layer) & groundLayer) != 0)
         {
             player.Drag();
         }
@@ -33,5 +33,6 @@ public class StickSensor : MonoBehaviour
     void OnCollisionExit(Collision collision)
     {
         collidingObject = null;
+        player.StickCollisionExit();
     }
 }
