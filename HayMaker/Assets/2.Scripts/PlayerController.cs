@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     public bool IsMoving => Mathf.Abs(rb.linearVelocity.x) > 0.1f;
 
     [Header("Movement")]
+    public AnimationCurve SpeedOverTime;
     public float baseSpeed = 3f;
     public float speedIncreaseRate = 0.2f;
     public float stickDragStrength = 0.1f;
@@ -21,12 +22,17 @@ public class PlayerController : MonoBehaviour
 
     [Header("Stick")]
     public Transform stick;
-    public float stickRotateSpeed = 120f;
-    public float minStickAngle = -45f;
-    public float maxStickAngle = 45f;
-    [Range(0f,1f)]
-    public float returnToZeroAngleStrength = 0.5f;
     public float maxBendTime = 0f;
+    [Header("Stick Physics")]
+    public Rigidbody stickRb;
+    public float stickTorque = 15f;
+    public float returnTorque = 5f;
+    public float maxAngularVelocity = 10f;
+    [Header("Stick Return")]
+    public float zeroAngleEpsilon = 0.5f;      // degrees
+    public float zeroAngularVelEpsilon = 0.05f;
+    public float returnDamping = 1.2f;
+
 
     [Header("Handles")]
     public MeshRenderer MR;
@@ -62,14 +68,13 @@ public class PlayerController : MonoBehaviour
                 Jump();
         }
 
-        RotateStick();
-
         FSM.Refresh();
     }
 
     void FixedUpdate()
     {
         Move();
+        RotateStick();
     }
 
     void Move()
@@ -81,46 +86,51 @@ public class PlayerController : MonoBehaviour
 
     void RotateStick()
     {
-        if (!stick) 
+        if (stickInput.y == 0f)
+        {
+            ApplyCounterTorque();
             return;
-
-        float currentZ = stick.localEulerAngles.z;
-        if (currentZ > 180) currentZ -= 360;
-
-        if (IsDragging)
-        {
-            float projectedZ = currentZ - stickInput.y * stickRotateSpeed * Time.deltaTime;
-            projectedZ = Mathf.Clamp(projectedZ, currentZ, maxStickAngle);
-            currentZ = projectedZ;
-        } else
-        {
-            currentZ -= stickInput.y * stickRotateSpeed * Time.deltaTime;
-            currentZ = Mathf.Clamp(currentZ, minStickAngle, maxStickAngle);
         }
 
-        if (IsBending && stickInput.y == 0f)
+        // Prevent insane spinning
+        stickRb.maxAngularVelocity = maxAngularVelocity;
+
+        float input = stickInput.y;
+
+        // INPUT TORQUE
+        float torque = -input * stickTorque;
+
+        stickRb.AddTorque(Vector3.forward * torque, ForceMode.Acceleration);
+
+        // RETURN TO ZERO (SPRING)
+        if (Mathf.Abs(input) < 0.05f)
+        {
+            ApplyCounterTorque();
+        }
+
+        // BENDING RELEASE /JUMP
+        if (IsBending && (stickInput.y<0.1f))
+        {
             Jump();
-
-        //apply counter motion to return to 0
-        float counterAngle = returnToZeroAngleStrength * stickRotateSpeed * Time.deltaTime;
-        if (currentZ > 0f)
-        {
-            currentZ -= counterAngle;
-            currentZ = Mathf.Clamp(currentZ, 0f, currentZ);
-        } else if ( currentZ < 0f)
-        {
-            if (stickInput.y > 0f)
-                if (IsDragging && (prevStickInput.y <= stickInput.y))
-                    counterAngle = 0f;
-
-            currentZ += counterAngle;        
-            currentZ = Mathf.Clamp(currentZ, currentZ, 0f);
         }
-
-        // apply rotation
-        stick.localRotation = Quaternion.Euler(0, 0, currentZ);
 
         prevStickInput = stickInput;
+    }
+
+    void ApplyCounterTorque()
+    {
+        float angle = GetStickAngle();
+        float angularVel = stickRb.angularVelocity.z;
+        // Apply return torque toward 0
+        float springTorque = -Mathf.Sign(angle) * returnTorque;
+        stickRb.AddTorque(Vector3.forward * springTorque,
+                        ForceMode.Acceleration);
+        // If we've crossed or reached zero → SNAP
+        if (Mathf.Sign(angle) != Mathf.Sign(angle - angularVel * Time.fixedDeltaTime))
+        {
+            stickRb.angularVelocity = Vector3.zero;
+            stickRb.MoveRotation(Quaternion.identity);
+        }
     }
 
     public void Jump()
@@ -170,4 +180,13 @@ public class PlayerController : MonoBehaviour
     {
         IsAirborne = true;
     }
+
+    float GetStickAngle()
+    {
+        float angle = stickRb.transform.localEulerAngles.z;
+        if (angle > 180f)
+            angle -= 360f;
+        return angle;
+    }
+
 }
