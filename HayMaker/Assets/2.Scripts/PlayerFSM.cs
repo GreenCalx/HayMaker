@@ -149,10 +149,12 @@ public class PlayerFSM
     public void OnRunningEnter()
     {
         Debug.Log("RunningEnter");
+        PC.Run(true);
     }
     public void OnRunningExit()
     {
         Debug.Log("RunningExit");
+        PC.Run(false);
     }
     public bool RunningCondition()
     {

@@ -33,10 +33,11 @@ public class PlayerController : MonoBehaviour
     public float zeroAngularVelEpsilon = 0.05f;
     public float returnDamping = 1.2f;
 
-
     [Header("Handles")]
     public MeshRenderer MR;
     public ParticleSystem DragPS;
+    public Animator animator;
+    public readonly string runningAnimParm = "IsRunning";
 
     private Rigidbody rb;
     private Vector2 moveInput;
@@ -138,6 +139,11 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, 0f);
         Vector3 jumpDir = (Vector3.up * jumpForce) + (Vector3.right * (jumpForce * 0.1f));
         rb.AddForce(jumpDir, ForceMode.Impulse);
+    }
+
+    public void Run(bool iState)
+    {
+        animator.SetBool(runningAnimParm, iState);
     }
 
     public void Drag()
