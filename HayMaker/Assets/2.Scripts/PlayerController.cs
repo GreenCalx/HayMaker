@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     public float maxStickAngle = 45f;
     [Range(0f,1f)]
     public float returnToZeroAngleStrength = 0.5f;
+    public float maxBendTime = 0f;
 
     [Header("Handles")]
     public MeshRenderer MR;
@@ -36,6 +37,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 stickInput;
     private Vector2 prevStickInput;
     private float speedTimer;
+    private float elapsedBendTime;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -47,10 +49,18 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         speedTimer += Time.deltaTime;
+
         currentSpeed = baseSpeed + speedTimer * speedIncreaseRate;
         
         if (IsDragging)
             currentSpeed -= currentSpeed * stickDragStrength;
+
+        if (IsBending)
+        {
+            elapsedBendTime += Time.deltaTime;
+            if (elapsedBendTime > maxBendTime)
+                Jump();
+        }
 
         RotateStick();
 
@@ -73,8 +83,6 @@ public class PlayerController : MonoBehaviour
     {
         if (!stick) 
             return;
-
-        stickInput.y *= -1f;
 
         float currentZ = stick.localEulerAngles.z;
         if (currentZ > 180) currentZ -= 360;
@@ -118,7 +126,8 @@ public class PlayerController : MonoBehaviour
     public void Jump()
     {
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, 0f);
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        Vector3 jumpDir = (Vector3.up * jumpForce) + (Vector3.right * (jumpForce * 0.1f));
+        rb.AddForce(jumpDir, ForceMode.Impulse);
     }
 
     public void Drag()
@@ -128,7 +137,11 @@ public class PlayerController : MonoBehaviour
 
     public void Bend()
     {
+        if (IsBending)
+            return;
+
         IsBending = true;
+        elapsedBendTime = 0f;
     }
 
     public void StickCollisionExit()
