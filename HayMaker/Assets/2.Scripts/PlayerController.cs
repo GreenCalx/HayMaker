@@ -45,6 +45,9 @@ public class PlayerController : MonoBehaviour
     public List<AudioClip> footstepClips;
     public Transform handle_footstepBuffer;
 
+    [Header("UI")]
+    public UIGameOver uiGameOver;
+
     [Header("Handles")]
     public SkinnedMeshRenderer selfMR;
     public AcceleratorAccumulator accumulator;
@@ -58,6 +61,7 @@ public class PlayerController : MonoBehaviour
     public readonly string airborneAnimParm = "IsAirborne";
     public readonly string victoryAnimTrigg = "OnWin";
     public readonly string failAnimTrigg = "OnLose";
+    public readonly string deadAnimTrigg = "Dead";
 
     private Rigidbody rb;
     private Vector2 moveInput;
@@ -66,6 +70,7 @@ public class PlayerController : MonoBehaviour
     private float elapsedBendTime;
     bool firstFootstep = false;
     bool secondFootstep = false;
+    bool isDead = false;
 
     private bool freezeMovements = false;
     void Awake()
@@ -79,6 +84,9 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (isDead)
+            return;
+
         if (IsBending)
         {
             elapsedBendTime += Time.deltaTime;
@@ -91,6 +99,8 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isDead)
+            return;
         Move();
         RotateStick();
     }
@@ -341,11 +351,17 @@ public class PlayerController : MonoBehaviour
 
     public void Kill()
     {
+        isDead = true;
+
         // Animate Death here
         stickSensor.rb.isKinematic = true;
+        animator.SetTrigger(deadAnimTrigg);
 
         // Do stuff like animate ..
+        uiGameOver.Setup(-1f);
+        uiGameOver.gameObject.SetActive(true);
+        
 
-        Reset();
+        //Reset();
     }
 }

@@ -9,6 +9,8 @@ public class UIGameOver : MonoBehaviour
 
     public void Setup(float iNailFactor)
     {
+        if (iNailFactor < 0f)
+            tmpScoreVal.text = "Floor Wiper";
         if (iNailFactor == 0f)
             tmpScoreVal.text = "Nailed it!";
         else if (iNailFactor < 1.8f)
