@@ -16,6 +16,8 @@ public class StickSensor : MonoBehaviour
     {
         if (player.IsAirborne)
             return;
+        if (player.isDead)
+            return;
 
         collidingObject = collision.gameObject;
         if (((1 << collision.gameObject.layer) & stepLayer) != 0)
@@ -29,6 +31,8 @@ public class StickSensor : MonoBehaviour
     {
         if (player.IsAirborne)
             return;
+        if (player.isDead)
+            return;
 
         if (((1 << collision.gameObject.layer) & groundLayer) != 0)
         {
@@ -38,12 +42,18 @@ public class StickSensor : MonoBehaviour
 
     void OnCollisionExit(Collision collision)
     {
+        if (player.isDead)
+            return;
+
         collidingObject = null;
         player.StickCollisionExit();
     }
 
     void Update()
     {
+        if (player.isDead)
+            return;
+
         animator.SetBool(animParmBend, player.IsBending);
         if (player.IsBending)
             bendTime += Time.deltaTime;

@@ -8,7 +8,8 @@ public enum EPlayerState
     RUNNING=1,
     DRAGGING=2,
     BENDING=3,
-    AIRBORNE=4
+    AIRBORNE=4,
+    DEAD=5
 }
 
 public class Arc
@@ -140,7 +141,7 @@ public class PlayerFSM
 
     public bool IdleCondition()
     {
-        return !PC.IsMoving && !PC.IsBending && !PC.IsAirborne && !PC.IsDragging;
+        return !PC.IsMoving && !PC.IsBending && !PC.IsAirborne && !PC.IsDragging && !PC.isDead;
     }
 
     /// <summary>
@@ -158,7 +159,7 @@ public class PlayerFSM
     }
     public bool RunningCondition()
     {
-        return PC.IsMoving && !PC.IsBending && !PC.IsAirborne && !PC.IsDragging;
+        return PC.IsMoving && !PC.IsBending && !PC.IsAirborne && !PC.IsDragging && !PC.isDead;
     }
 
     /// <summary>
@@ -174,7 +175,7 @@ public class PlayerFSM
     }
     public bool BendingCondition()
     {
-        return PC.IsMoving && PC.IsBending && !PC.IsAirborne;
+        return PC.IsMoving && PC.IsBending && !PC.IsAirborne && !PC.isDead;
     }
     /// <summary>
     /// Dragging
@@ -193,7 +194,7 @@ public class PlayerFSM
     }
     public bool DraggingCondition()
     {
-        return PC.IsMoving && !PC.IsBending && !PC.IsAirborne && PC.IsDragging;
+        return PC.IsMoving && !PC.IsBending && !PC.IsAirborne && PC.IsDragging && !PC.isDead;
     }
     /// <summary>
     /// Airborne
@@ -208,7 +209,11 @@ public class PlayerFSM
     }
     public bool AirborneCondition()
     {
-        return PC.IsAirborne && !PC.IsBending;
+        return PC.IsAirborne && !PC.IsBending && !PC.isDead;
     }
     
+    public void Kill()
+    {
+        CurrentState = EPlayerState.DEAD;
+    }
 }

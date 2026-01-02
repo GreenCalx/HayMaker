@@ -71,7 +71,7 @@ public class PlayerController : MonoBehaviour
     private float elapsedBendTime;
     bool firstFootstep = false;
     bool secondFootstep = false;
-    bool isDead = false;
+    public bool isDead = false;
 
     private bool freezeMovements = false;
     void Awake()
@@ -94,7 +94,9 @@ public class PlayerController : MonoBehaviour
             if (elapsedBendTime > maxBendTime)
                 Jump();
         }
-        FSM.Refresh();
+        if (FSM!=null)
+            FSM.Refresh();
+
         UpdateRunningAnimationSpeed();
     }
 
@@ -183,6 +185,9 @@ public class PlayerController : MonoBehaviour
 
     public void Jump()
     {
+        if (isDead)
+            return;
+
         float bendTime = 1f + stickSensor.bendTime;
 
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, 0f);
@@ -195,18 +200,23 @@ public class PlayerController : MonoBehaviour
 
     public void Run(bool iState)
     {
+        if (isDead)
+            return;
         animator.SetBool(runningAnimParm, iState);
     }
 
     public void Drag()
     {
+        if (isDead)
+            return;
+
         IsDragging = true;
         animator.SetBool(runningAnimParm, true);
     }
 
     public void Bend()
     {
-        if (IsBending)
+        if (IsBending ||isDead)
             return;
 
         IsBending = true;
@@ -232,6 +242,9 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
+        if (isDead)
+            return;
+
         if (((1 << collision.gameObject.layer) & obstacleLayer) != 0)
         {
             Obstacle obstacle = collision.gameObject.GetComponent<Obstacle>();
@@ -251,6 +264,9 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionExit(Collision collision)
     {
+        if (isDead)
+            return;
+
         if (((1 << collision.gameObject.layer) & obstacleLayer) != 0)
         {
             return;
@@ -314,6 +330,9 @@ public class PlayerController : MonoBehaviour
 
     void UpdateRunningAnimationSpeed()
     {
+        if (isDead)
+            return;
+            
         animator.speed = accumulator.current;
         
         // play footsteps in a dirty place
@@ -352,13 +371,30 @@ public class PlayerController : MonoBehaviour
 
     public void Kill()
     {
+        if (isDead)
+            return;
+
         isDead = true;
+        IsAirborne  = false;
+        IsDragging  = false;
+        IsBending   = false;
+
+        FSM.Kill();
+        FSM = null;
+
+        rb.linearVelocity = Vector3.zero;
+        rb.constraints = RigidbodyConstraints.FreezeAll;
+        stickSensor.rb.constraints = RigidbodyConstraints.FreezeAll;
+
+
 
         deathFX.Play();
-
         // Animate Death here
         stickSensor.rb.isKinematic = true;
-        animator.SetBool(deadAnimTrigg, true);
+        rb.isKinematic = true;
+
+        animator.speed = 1f;
+        animator.SetTrigger(deadAnimTrigg);
 
         // Do stuff like animate ..
         uiGameOver.Setup(-1f);
