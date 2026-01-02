@@ -41,7 +41,9 @@ public class PlayerController : MonoBehaviour
     [Header("Handles")]
     public AcceleratorAccumulator accumulator;
     public ParticleSystem DragPS;
-    public ParticleSystem NailHitPS;
+    public ParticleSystem PerfectNailHitPS;
+    public ParticleSystem GoodNailHitPS;
+    public ParticleSystem BadNailHitPS;
     public Animator animator;
     public readonly string runningAnimParm = "IsRunning";
     public readonly string airborneAnimParm = "IsAirborne";
@@ -228,12 +230,21 @@ public class PlayerController : MonoBehaviour
         SceneManager.LoadScene("Game",LoadSceneMode.Single);
     }
 
-    public void OnGameFinish()
+    public void OnGameFinish(float nailHitPrecision)
     {
         rb.linearVelocity = Vector3.zero;
         freezeMovements = true;
-        NailHitPS.Play();
+
+        Debug.Log("Nail aim : " + nailHitPrecision);
+        if (nailHitPrecision < 0.1f)
+            PerfectNailHitPS.Play();
+        else if (nailHitPrecision < 0.5f)
+            GoodNailHitPS.Play();
+        else
+            BadNailHitPS.Play();
+
         nailHitSFX.Play();
+        
         // Force run animation during finis..
         Run(true);
     }

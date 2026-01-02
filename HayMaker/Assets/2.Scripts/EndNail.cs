@@ -9,6 +9,8 @@ public class EndNail : MonoBehaviour
 {
     public Rigidbody rb;
     public Transform NailTarget;
+    [Header("Tweaks")]
+    public float NailHitBonusForce = 1.5f;
     [Header("GameOver UI")]
     public UIGameOver uiGameOver;
 
@@ -28,7 +30,15 @@ public class EndNail : MonoBehaviour
         if (SS!=null)
         {
             PlayerController PC = SS.player;
-            PC.OnGameFinish();
+
+            ContactPoint cp = collision.GetContact(0);
+            float nailAim = Mathf.Abs(cp.point.y - transform.position.y);
+
+            Vector3 bonusForce = new Vector3( Mathf.Lerp(NailHitBonusForce, 0f, nailAim), 0f, 0f);
+            rb.AddForce(bonusForce, ForceMode.Impulse);
+
+            PC.OnGameFinish(nailAim);
+            
             PostNailPlantCB.AddListener(
                 () =>
                 {
