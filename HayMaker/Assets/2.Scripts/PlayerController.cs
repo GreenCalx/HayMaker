@@ -39,9 +39,11 @@ public class PlayerController : MonoBehaviour
     public AudioSource dragSFX;
     public AudioSource bendSFX;
     public AudioSource nailHitSFX;
+    public AudioSource victorySFX;
+    public AudioSource loseSFX;
 
     [Header("Handles")]
-    public MeshRenderer selfMR;
+    public SkinnedMeshRenderer selfMR;
     public AcceleratorAccumulator accumulator;
     public ParticleSystem DragPS;
     public ParticleSystem PerfectNailHitPS;
@@ -51,6 +53,8 @@ public class PlayerController : MonoBehaviour
     public Animator animator;
     public readonly string runningAnimParm = "IsRunning";
     public readonly string airborneAnimParm = "IsAirborne";
+    public readonly string victoryAnimTrigg = "OnWin";
+    public readonly string failAnimTrigg = "OnLose";
 
     private Rigidbody rb;
     private Vector2 moveInput;
@@ -273,6 +277,18 @@ public class PlayerController : MonoBehaviour
 
         // Force run animation during finis..
         Run(true);
+    }
+
+    public void OnVictory()
+    {
+        animator.SetTrigger(victoryAnimTrigg);
+        victorySFX.Play();
+    }
+
+    public void OnLose()
+    {
+        animator.SetTrigger(failAnimTrigg);
+        loseSFX.Play();
     }
 
     void UpdateRunningAnimationSpeed()

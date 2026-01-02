@@ -45,9 +45,16 @@ public class EndNail : MonoBehaviour
                     float nailFactor = plankHit ? 0f : Vector3.Distance(NailTarget.transform.position, transform.position);
                     nailFactor = Mathf.Clamp(nailFactor, 0f, initDist);
                     
+                    if (nailFactor <= 0f)
+                        PC.OnVictory();
+                    else
+                        PC.OnLose();
+
                     uiGameOver.gameObject.SetActive(true);
                     uiGameOver.Setup(nailFactor);
+
                     // Continue game here / stop time
+                    
                 }
             );
             StartCoroutine(WaitNailPlant());
