@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     public float jumpForce = 6f;
 
     [Header("Stick")]
+    public StickSensor stickSensor;
     public Transform stick;
     public float maxBendTime = 0f;
     [Header("Stick Physics")]
@@ -35,6 +36,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Audio")]
     public AudioSource dragSFX;
+    public AudioSource bendSFX;
     public AudioSource nailHitSFX;
 
     [Header("Handles")]
@@ -158,8 +160,11 @@ public class PlayerController : MonoBehaviour
 
     public void Jump()
     {
+        float bendTime = 1f + stickSensor.bendTime;
+
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, 0f);
-        Vector3 jumpDir = (Vector3.up * jumpForce) + (Vector3.right * (jumpForce * 0.1f));
+        Vector3 jumpDir = (Vector3.up * jumpForce) + (Vector3.right * (jumpForce * 0.2f));
+        jumpDir *= bendTime;
         rb.AddForce(jumpDir, ForceMode.Impulse);
     }
 
@@ -181,6 +186,7 @@ public class PlayerController : MonoBehaviour
 
         IsBending = true;
         elapsedBendTime = 0f;
+        bendSFX.Play();
     }
 
     public void StickCollisionExit()

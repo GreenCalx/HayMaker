@@ -208,7 +208,7 @@ public class PlayerFSM
     }
     public bool AirborneCondition()
     {
-        return PC.IsAirborne;
+        return PC.IsAirborne && !PC.IsBending;
     }
     
 }
