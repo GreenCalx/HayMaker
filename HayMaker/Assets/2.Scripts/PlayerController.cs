@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
     public AudioSource nailHitSFX;
 
     [Header("Handles")]
-    public MeshRenderer MR;
+    public AcceleratorAccumulator accumulator;
     public ParticleSystem DragPS;
     public ParticleSystem NailHitPS;
     public Animator animator;
@@ -97,8 +97,12 @@ public class PlayerController : MonoBehaviour
 
         // only forward
         float inputx = Mathf.Clamp(moveInput.x, 0f, 1f);
+        if (inputx > 0f)
+            accumulator.Accumulate();
+        else
+            accumulator.Reset();
 
-        velocity.x = inputx * currentSpeed;
+        velocity.x = inputx * currentSpeed * accumulator.current;
 
         rb.linearVelocity = velocity;
     }

@@ -11,7 +11,11 @@ public class UIGameOver : MonoBehaviour
     {
         if (iNailFactor == 0f)
             tmpScoreVal.text = "Nailed it!";
+        else if (iNailFactor < 1.8f)
+            tmpScoreVal.text = "Getting close";
+        else if (iNailFactor < 2.6f)
+            tmpScoreVal.text = "Not good";
         else
-            tmpScoreVal.text = iNailFactor.ToString();
+            tmpScoreVal.text = "Shrimp";
     }
 }
