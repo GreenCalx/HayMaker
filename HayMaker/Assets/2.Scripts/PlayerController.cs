@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
@@ -36,8 +37,10 @@ public class PlayerController : MonoBehaviour
     [Header("Handles")]
     public MeshRenderer MR;
     public ParticleSystem DragPS;
+    public ParticleSystem NailHitPS;
     public Animator animator;
     public readonly string runningAnimParm = "IsRunning";
+    public readonly string airborneAnimParm = "IsAirborne";
 
     private Rigidbody rb;
     private Vector2 moveInput;
@@ -45,12 +48,15 @@ public class PlayerController : MonoBehaviour
     private Vector2 prevStickInput;
     private float speedTimer;
     private float elapsedBendTime;
+
+    private bool freezeMovements = false;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         currentSpeed = baseSpeed;
         prevStickInput = Vector2.zero;
         FSM = new PlayerFSM(this);
+        freezeMovements = false;
     }
 
     void Update()
@@ -80,13 +86,24 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
+        if (freezeMovements)
+            return;
+
         Vector3 velocity = rb.linearVelocity;
-        velocity.x = moveInput.x * currentSpeed;
+
+        // only forward
+        float inputx = Mathf.Clamp(moveInput.x, 0f, 1f);
+
+        velocity.x = inputx * currentSpeed;
+
         rb.linearVelocity = velocity;
     }
 
     void RotateStick()
     {
+        if (freezeMovements)
+            return;
+
         if (stickInput.y == 0f)
         {
             ApplyCounterTorque();
@@ -180,11 +197,13 @@ public class PlayerController : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         IsAirborne = false;
+        animator.SetBool(airborneAnimParm, false);
     }
 
     void OnCollisionExit(Collision collision)
     {
         IsAirborne = true;
+        animator.SetBool(airborneAnimParm, true);
     }
 
     float GetStickAngle()
@@ -195,4 +214,17 @@ public class PlayerController : MonoBehaviour
         return angle;
     }
 
+    public void ResetStage(InputAction.CallbackContext ctx)
+    {
+        SceneManager.LoadScene("Game",LoadSceneMode.Single);
+    }
+
+    public void OnGameFinish()
+    {
+        rb.linearVelocity = Vector3.zero;
+        freezeMovements = true;
+        NailHitPS.Play();
+        // Force run animation during finis..
+        Run(true);
+    }
 }
