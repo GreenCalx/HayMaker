@@ -29,10 +29,11 @@ public class PlayerController : MonoBehaviour
     public float stickTorque = 15f;
     public float returnTorque = 5f;
     public float maxAngularVelocity = 10f;
-    [Header("Stick Return")]
-    public float zeroAngleEpsilon = 0.5f;      // degrees
-    public float zeroAngularVelEpsilon = 0.05f;
-    public float returnDamping = 1.2f;
+
+    [Header("Obstacles")]
+    public LayerMask obstacleLayer;
+    public LayerMask groundLayer;
+
 
     [Header("Audio")]
     public AudioSource dragSFX;
@@ -40,11 +41,13 @@ public class PlayerController : MonoBehaviour
     public AudioSource nailHitSFX;
 
     [Header("Handles")]
+    public MeshRenderer selfMR;
     public AcceleratorAccumulator accumulator;
     public ParticleSystem DragPS;
     public ParticleSystem PerfectNailHitPS;
     public ParticleSystem GoodNailHitPS;
     public ParticleSystem BadNailHitPS;
+    public ParticleSystem jumpPS;
     public Animator animator;
     public readonly string runningAnimParm = "IsRunning";
     public readonly string airborneAnimParm = "IsAirborne";
@@ -163,9 +166,10 @@ public class PlayerController : MonoBehaviour
         float bendTime = 1f + stickSensor.bendTime;
 
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, 0f);
-        Vector3 jumpDir = (Vector3.up * jumpForce) + (Vector3.right * (jumpForce * 0.2f));
+        Vector3 jumpDir = (Vector3.up * jumpForce) + (Vector3.right * (jumpForce * 0.25f));
         jumpDir *= bendTime;
         rb.AddForce(jumpDir, ForceMode.Impulse);
+        jumpPS.Play();
     }
 
     public void Run(bool iState)
@@ -208,14 +212,35 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        IsAirborne = false;
-        animator.SetBool(airborneAnimParm, false);
+        if (((1 << collision.gameObject.layer) & obstacleLayer) != 0)
+        {
+            Obstacle obstacle = collision.gameObject.GetComponent<Obstacle>();
+            if (obstacle != null)
+            {
+                accumulator.Freeze(obstacle.accelFreezeDuration, obstacle.accelSpeedLoss);
+            }
+            return;
+        }
+
+        if (((1 << collision.gameObject.layer) & groundLayer) != 0)
+        {
+            IsAirborne = false;
+            animator.SetBool(airborneAnimParm, false);
+        }
     }
 
     void OnCollisionExit(Collision collision)
     {
-        IsAirborne = true;
-        animator.SetBool(airborneAnimParm, true);
+        if (((1 << collision.gameObject.layer) & obstacleLayer) != 0)
+        {
+            return;
+        }
+        
+        if (((1 << collision.gameObject.layer) & groundLayer) != 0)
+        {
+            IsAirborne = true;
+            animator.SetBool(airborneAnimParm, true);
+        }
     }
 
     float GetStickAngle()

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Bucket : MonoBehaviour
+public class Bucket : Obstacle
 {
     public AudioSource bucketSFX;
 
