@@ -63,7 +63,7 @@ public class PlayerController : MonoBehaviour
     public readonly string failAnimTrigg = "OnLose";
     public readonly string deadAnimTrigg = "Dead";
 
-    private Rigidbody rb;
+    public Rigidbody rb;
     private Vector2 moveInput;
     private Vector2 stickInput;
     private Vector2 prevStickInput;

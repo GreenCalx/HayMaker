@@ -5967,7 +5967,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.059742473, y: -0, z: -0, w: 0.9982139}
-  m_LocalPosition: {x: 4, y: 3.92, z: -10}
+  m_LocalPosition: {x: 5, y: 3.92, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6030,7 +6030,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   player: {fileID: 1472982549}
-  offset: {x: 4, y: 3.92, z: -10}
+  offset: {x: 5, y: 3.92, z: -10}
   ySmoothSpeed: 8
 --- !u!1 &355573841
 GameObject:
@@ -24728,6 +24728,7 @@ MonoBehaviour:
   BadNailHitPS: {fileID: 698095825}
   jumpPS: {fileID: 1978071084}
   animator: {fileID: 566134024}
+  rb: {fileID: 0}
 --- !u!4 &1472982549
 Transform:
   m_ObjectHideFlags: 0
@@ -32208,9 +32209,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4376080316558574005, guid: 60a9ba14fc3eaf04cba8d87cbc971d27, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.19
+      objectReference: {fileID: 0}
+    - target: {fileID: 6416266956819930192, guid: 60a9ba14fc3eaf04cba8d87cbc971d27, type: 3}
+      propertyPath: m_Size.z
+      value: 0.76
+      objectReference: {fileID: 0}
+    - target: {fileID: 6416266956819930192, guid: 60a9ba14fc3eaf04cba8d87cbc971d27, type: 3}
+      propertyPath: m_Center.y
+      value: -0.21
+      objectReference: {fileID: 0}
     - target: {fileID: 6421280245377353623, guid: 60a9ba14fc3eaf04cba8d87cbc971d27, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.12
+      value: -1.51
       objectReference: {fileID: 0}
     - target: {fileID: 7063099820180682041, guid: 60a9ba14fc3eaf04cba8d87cbc971d27, type: 3}
       propertyPath: m_LocalPosition.x
@@ -32219,6 +32232,14 @@ PrefabInstance:
     - target: {fileID: 7788677092751607580, guid: 60a9ba14fc3eaf04cba8d87cbc971d27, type: 3}
       propertyPath: m_Name
       value: RatPatrol
+      objectReference: {fileID: 0}
+    - target: {fileID: 8039858632255169124, guid: 60a9ba14fc3eaf04cba8d87cbc971d27, type: 3}
+      propertyPath: repulseForce
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8156634070347383320, guid: 60a9ba14fc3eaf04cba8d87cbc971d27, type: 3}
+      propertyPath: m_Speed
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
