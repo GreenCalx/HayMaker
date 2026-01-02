@@ -34,7 +34,7 @@ public class EndNail : MonoBehaviour
             ContactPoint cp = collision.GetContact(0);
             float nailAim = Mathf.Abs(cp.point.y - transform.position.y);
 
-            Vector3 bonusForce = new Vector3( Mathf.Lerp(NailHitBonusForce, 0f, nailAim), 0f, 0f);
+            Vector3 bonusForce = new Vector3( Mathf.InverseLerp(0f, NailHitBonusForce, nailAim), 0f, 0f);
             rb.AddForce(bonusForce, ForceMode.Impulse);
 
             PC.OnGameFinish(nailAim);

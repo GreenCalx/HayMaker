@@ -51,7 +51,7 @@ public class AcceleratorAccumulator : MonoBehaviour
 
     void TryPlayVoiceLines()
     {
-        if (current >= max_acceleration)
+        if ((current >= max_acceleration) && (prevCurrent < max_acceleration))
         {
             maxSpeedSource.Play();
             return;

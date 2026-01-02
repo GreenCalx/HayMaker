@@ -41,6 +41,7 @@ public class PlayerController : MonoBehaviour
     public AudioSource nailHitSFX;
     public AudioSource victorySFX;
     public AudioSource loseSFX;
+    public AudioSource deathFX;
     public GameObject prefab_footstepSFX;
     public List<AudioClip> footstepClips;
     public Transform handle_footstepBuffer;
@@ -189,6 +190,7 @@ public class PlayerController : MonoBehaviour
         jumpDir *= bendTime;
         rb.AddForce(jumpDir, ForceMode.Impulse);
         jumpPS.Play();
+        bendSFX.Play();
     }
 
     public void Run(bool iState)
@@ -209,7 +211,6 @@ public class PlayerController : MonoBehaviour
 
         IsBending = true;
         elapsedBendTime = 0f;
-        bendSFX.Play();
     }
 
     public void StickCollisionExit()
@@ -353,15 +354,16 @@ public class PlayerController : MonoBehaviour
     {
         isDead = true;
 
+        deathFX.Play();
+
         // Animate Death here
         stickSensor.rb.isKinematic = true;
-        animator.SetTrigger(deadAnimTrigg);
+        animator.SetBool(deadAnimTrigg, true);
 
         // Do stuff like animate ..
         uiGameOver.Setup(-1f);
         uiGameOver.gameObject.SetActive(true);
         
-
         //Reset();
     }
 }
