@@ -11172,6 +11172,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ea385a5e314376946a99e97ca5a182e3, type: 3}
   m_PrefabInstance: {fileID: 533504437}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &548060704
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 548060705}
+  m_Layer: 3
+  m_Name: Buff_Footsteps
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &548060705
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 548060704}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1279691208}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &565808461
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22411,6 +22442,7 @@ Transform:
   - {fileID: 1539050419}
   - {fileID: 1928343156}
   - {fileID: 629425534}
+  - {fileID: 548060705}
   m_Father: {fileID: 1472982549}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1284684406 stripped
@@ -22594,6 +22626,13 @@ MonoBehaviour:
   nailHitSFX: {fileID: 1992419887}
   victorySFX: {fileID: 1928343157}
   loseSFX: {fileID: 629425535}
+  prefab_footstepSFX: {fileID: 7570244164441488450, guid: d0eefa96bd0b0274bbe5e2a99b32e074, type: 3}
+  footstepClips:
+  - {fileID: 8300000, guid: aca2defac5e05f3418b5ecbda1a9dbf1, type: 3}
+  - {fileID: 8300000, guid: 7f93e3c925dabd34eb2ad6d89d422781, type: 3}
+  - {fileID: 8300000, guid: d9f8b2f45e59f424a846e9c9c43014f8, type: 3}
+  - {fileID: 8300000, guid: 44bba6c31de04014ea7d633bec860fd1, type: 3}
+  handle_footstepBuffer: {fileID: 548060705}
   selfMR: {fileID: 396394493}
   accumulator: {fileID: 860687684}
   DragPS: {fileID: 211987555}

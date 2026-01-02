@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
-
+using System;
+using System.Collections.Generic;
 public class PlayerController : MonoBehaviour
 {
     [Header("View")]
@@ -34,13 +35,15 @@ public class PlayerController : MonoBehaviour
     public LayerMask obstacleLayer;
     public LayerMask groundLayer;
 
-
     [Header("Audio")]
     public AudioSource dragSFX;
     public AudioSource bendSFX;
     public AudioSource nailHitSFX;
     public AudioSource victorySFX;
     public AudioSource loseSFX;
+    public GameObject prefab_footstepSFX;
+    public List<AudioClip> footstepClips;
+    public Transform handle_footstepBuffer;
 
     [Header("Handles")]
     public SkinnedMeshRenderer selfMR;
@@ -61,6 +64,8 @@ public class PlayerController : MonoBehaviour
     private Vector2 stickInput;
     private Vector2 prevStickInput;
     private float elapsedBendTime;
+    bool firstFootstep = false;
+    bool secondFootstep = false;
 
     private bool freezeMovements = false;
     void Awake()
@@ -294,5 +299,38 @@ public class PlayerController : MonoBehaviour
     void UpdateRunningAnimationSpeed()
     {
         animator.speed = accumulator.current;
+        
+        // play footsteps in a dirty place
+        AnimatorStateInfo asi = animator.GetCurrentAnimatorStateInfo(0);
+        if (asi.IsName("RUNNING"))
+        {
+            float animPlaybackElapsed = asi.normalizedTime % 1;
+            if (animPlaybackElapsed < 0.05f)
+            {
+                firstFootstep = false;
+                secondFootstep = false;
+            }
+            else if ((animPlaybackElapsed > 0.2f) && (!firstFootstep))
+            {
+                firstFootstep = true;
+                FootstepSFXPlay();
+            }
+            else if ((animPlaybackElapsed > 0.8f) && (!secondFootstep))
+            {
+                secondFootstep = true;
+                FootstepSFXPlay();
+            }
+        }
+    }
+
+    public void FootstepSFXPlay()
+    {
+        GameObject new_source = GameObject.Instantiate(prefab_footstepSFX);
+        new_source.transform.parent = handle_footstepBuffer;
+
+        AudioSource as_audio = new_source.GetComponent<AudioSource>();
+        as_audio.clip = footstepClips[UnityEngine.Random.Range(0, footstepClips.Count)];
+        as_audio.Play();
+        GameObject.Destroy(new_source, 1f);
     }
 }
