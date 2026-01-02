@@ -5,10 +5,10 @@ public class StickSensor : MonoBehaviour
     public PlayerController player;
     public LayerMask stepLayer;
     public LayerMask groundLayer;
+    public Rigidbody rb;
     [Header("Animations")]
     public readonly string animParmBend = "IsBending";
     public Animator animator;
-
     public float bendTime;
 
     GameObject collidingObject;
