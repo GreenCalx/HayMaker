@@ -394,7 +394,7 @@ public class PlayerController : MonoBehaviour
         rb.isKinematic = true;
 
         animator.speed = 1f;
-        animator.SetTrigger(deadAnimTrigg);
+        animator.SetBool(deadAnimTrigg, true);
 
         // Do stuff like animate ..
         uiGameOver.Setup(-1f);

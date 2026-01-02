@@ -13,11 +13,11 @@ public class UIGameOver : MonoBehaviour
             tmpScoreVal.text = "Floor Wiper";
         else if (iNailFactor == 0f)
             tmpScoreVal.text = "Nailed it!";
-        else if (iNailFactor < 1.8f)
+        else if (iNailFactor < 0.25f)
             tmpScoreVal.text = "Average";
-        else if (iNailFactor < 2.6f)
+        else if (iNailFactor < 0.5f)
             tmpScoreVal.text = "Weak midget";
-        else if ( iNailFactor >= 2.6f)
+        else if ( iNailFactor >= 0.75f)
             tmpScoreVal.text = "Shrimp";
     }
 }

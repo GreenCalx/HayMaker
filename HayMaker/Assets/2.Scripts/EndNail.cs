@@ -45,8 +45,10 @@ public class EndNail : MonoBehaviour
             PostNailPlantCB.AddListener(
                 () =>
                 {
-                    float nailFactor = plankHit ? 0f : Vector3.Distance(NailTarget.transform.position, transform.position);
-                    nailFactor = Mathf.Clamp(nailFactor, 0f, initDist);
+                    float nailDist = plankHit ? 0f : Vector3.Distance(NailTarget.transform.position, transform.position);
+                    nailDist = Mathf.Clamp(nailDist, 0f, 999f);
+
+                    float nailFactor = 1f - ((initDist - nailDist) / initDist);
                     
                     if (nailFactor <= 0f)
                         PC.OnVictory();
@@ -63,6 +65,14 @@ public class EndNail : MonoBehaviour
             StartCoroutine(WaitNailPlant());
         }
 
+        if (collision.collider.transform.gameObject == NailTarget.gameObject)
+        {
+            plankHit = true;
+        }
+    }
+
+    void OnCollisionStay(Collision collision)
+    {
         if (collision.collider.transform.gameObject == NailTarget.gameObject)
         {
             plankHit = true;
