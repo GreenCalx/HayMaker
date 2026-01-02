@@ -299,7 +299,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnGameFinish(float nailHitPrecision)
     {
-        rb.linearVelocity = Vector3.zero;
+        //rb.linearVelocity = Vector3.zero;
         freezeMovements = true;
 
         Debug.Log("Nail aim : " + nailHitPrecision);
