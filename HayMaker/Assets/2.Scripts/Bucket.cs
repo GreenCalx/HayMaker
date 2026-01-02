@@ -6,11 +6,11 @@ public class Bucket : Obstacle
     
     void OnCollisionEnter(Collision collision)
     {
-        PlayerController PC = collider.gameObject.GetComponentInParent<PlayerController>();
-        StickSensor SS = collider.gameObject.GetComponentInParent<StickSensor>();
+        PlayerController PC = collision.collider.gameObject.GetComponentInParent<PlayerController>();
+        StickSensor SS = collision.collider.gameObject.GetComponentInParent<StickSensor>();
         if ((PC==null)&&(SS==null))
             return;
-            
+
         bucketSFX.Play();
         OnFirstHit(collision.collider);
     }
