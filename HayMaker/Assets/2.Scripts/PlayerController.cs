@@ -262,6 +262,11 @@ public class PlayerController : MonoBehaviour
 
     public void ResetStage(InputAction.CallbackContext ctx)
     {
+        Reset();
+    }
+
+    void Reset()
+    {
         SceneManager.LoadScene("Game",LoadSceneMode.Single);
     }
 
@@ -332,5 +337,15 @@ public class PlayerController : MonoBehaviour
         as_audio.clip = footstepClips[UnityEngine.Random.Range(0, footstepClips.Count)];
         as_audio.Play();
         GameObject.Destroy(new_source, 1f);
+    }
+
+    public void Kill()
+    {
+        // Animate Death here
+        stickSensor.rb.isKinematic = true;
+
+        // Do stuff like animate ..
+
+        Reset();
     }
 }
