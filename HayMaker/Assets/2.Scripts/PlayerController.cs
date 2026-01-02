@@ -14,7 +14,6 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     public AnimationCurve SpeedOverTime;
     public float baseSpeed = 3f;
-    public float speedIncreaseRate = 0.2f;
     public float stickDragStrength = 0.1f;
     private float currentSpeed;
 
@@ -52,7 +51,6 @@ public class PlayerController : MonoBehaviour
     private Vector2 moveInput;
     private Vector2 stickInput;
     private Vector2 prevStickInput;
-    private float speedTimer;
     private float elapsedBendTime;
 
     private bool freezeMovements = false;
@@ -67,21 +65,14 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        speedTimer += Time.deltaTime;
-
-        currentSpeed = baseSpeed + speedTimer * speedIncreaseRate;
-        
-        if (IsDragging)
-            currentSpeed -= currentSpeed * stickDragStrength;
-
         if (IsBending)
         {
             elapsedBendTime += Time.deltaTime;
             if (elapsedBendTime > maxBendTime)
                 Jump();
         }
-
         FSM.Refresh();
+        UpdateRunningAnimationSpeed();
     }
 
     void FixedUpdate()
@@ -105,6 +96,10 @@ public class PlayerController : MonoBehaviour
             accumulator.Reset();
 
         velocity.x = inputx * currentSpeed * accumulator.current;
+        if (IsDragging)
+        {
+            velocity.x -= velocity.x * stickDragStrength;
+        }
 
         rb.linearVelocity = velocity;
     }
@@ -244,8 +239,13 @@ public class PlayerController : MonoBehaviour
             BadNailHitPS.Play();
 
         nailHitSFX.Play();
-        
+
         // Force run animation during finis..
         Run(true);
+    }
+
+    void UpdateRunningAnimationSpeed()
+    {
+        animator.speed = accumulator.current;
     }
 }
