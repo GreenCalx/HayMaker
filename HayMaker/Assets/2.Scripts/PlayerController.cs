@@ -34,6 +34,10 @@ public class PlayerController : MonoBehaviour
     public float zeroAngularVelEpsilon = 0.05f;
     public float returnDamping = 1.2f;
 
+    [Header("Audio")]
+    public AudioSource dragSFX;
+    public AudioSource nailHitSFX;
+
     [Header("Handles")]
     public MeshRenderer MR;
     public ParticleSystem DragPS;
@@ -166,6 +170,7 @@ public class PlayerController : MonoBehaviour
     public void Drag()
     {
         IsDragging = true;
+        animator.SetBool(runningAnimParm, true);
     }
 
     public void Bend()
@@ -224,6 +229,7 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         freezeMovements = true;
         NailHitPS.Play();
+        nailHitSFX.Play();
         // Force run animation during finis..
         Run(true);
     }

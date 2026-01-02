@@ -51,7 +51,7 @@ public class EndNail : MonoBehaviour
 
     IEnumerator WaitNailPlant()
     {
-        while (rb.linearVelocity.magnitude > 0.05f)
+        while (rb.linearVelocity.magnitude > 0.1f)
         {
             if (plankHit)
                 break;

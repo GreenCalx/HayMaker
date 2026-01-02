@@ -183,11 +183,13 @@ public class PlayerFSM
     {
         Debug.Log("DraggingEnter");
         PC.DragPS.Play();
+        PC.dragSFX.Play();
     }
     public void OnDraggingExit()
     {
         Debug.Log("DraggingExit");
         PC.DragPS.Stop();
+        PC.dragSFX.Stop();
     }
     public bool DraggingCondition()
     {
