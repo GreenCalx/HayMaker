@@ -5,6 +5,9 @@ public class StickSensor : MonoBehaviour
     public PlayerController player;
     public LayerMask stepLayer;
     public LayerMask groundLayer;
+    [Header("Animations")]
+    public readonly string animParmBend = "IsBending";
+    public Animator animator;
 
     GameObject collidingObject;
     void OnCollisionEnter(Collision collision)
@@ -34,5 +37,10 @@ public class StickSensor : MonoBehaviour
     {
         collidingObject = null;
         player.StickCollisionExit();
+    }
+
+    void Update()
+    {
+        animator.SetBool(animParmBend, player.IsBending);
     }
 }

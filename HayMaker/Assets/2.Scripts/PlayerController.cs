@@ -35,6 +35,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Audio")]
     public AudioSource dragSFX;
+    public AudioSource bendSFX;
     public AudioSource nailHitSFX;
 
     [Header("Handles")]
@@ -181,6 +182,7 @@ public class PlayerController : MonoBehaviour
 
         IsBending = true;
         elapsedBendTime = 0f;
+        bendSFX.Play();
     }
 
     public void StickCollisionExit()
