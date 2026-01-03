@@ -81,6 +81,9 @@ public class EndNail : MonoBehaviour
 
     IEnumerator WaitNailPlant()
     {
+        // wait for next frame
+        yield return new WaitForSeconds(0.2f);
+
         while (rb.linearVelocity.magnitude > 0.1f)
         {
             if (plankHit)
