@@ -61,6 +61,6 @@ public class StickSensor : MonoBehaviour
     void FixedUpdate()
     {
         if (player.IsBending)
-            bendTime += Time.deltaTime;
+            bendTime += Time.fixedDeltaTime;
     }
 }
