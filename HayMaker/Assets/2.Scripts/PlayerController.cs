@@ -87,13 +87,6 @@ public class PlayerController : MonoBehaviour
     {
         if (isDead)
             return;
-
-        if (IsBending)
-        {
-            elapsedBendTime += Time.deltaTime;
-            if (elapsedBendTime > maxBendTime)
-                Jump();
-        }
         if (FSM!=null)
             FSM.Refresh();
 
@@ -104,6 +97,14 @@ public class PlayerController : MonoBehaviour
     {
         if (isDead)
             return;
+
+        if (IsBending)
+        {
+            elapsedBendTime += Time.fixedDeltaTime;
+            if (elapsedBendTime > maxBendTime)
+                Jump();
+        }
+
         Move();
         RotateStick();
     }

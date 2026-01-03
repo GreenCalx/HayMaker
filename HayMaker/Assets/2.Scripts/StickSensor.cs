@@ -55,6 +55,11 @@ public class StickSensor : MonoBehaviour
             return;
 
         animator.SetBool(animParmBend, player.IsBending);
+
+    }
+
+    void FixedUpdate()
+    {
         if (player.IsBending)
             bendTime += Time.deltaTime;
     }
